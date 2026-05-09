@@ -78,6 +78,5 @@ func main() {
 	fmt.Println("BC", bc)
 	fmt.Println("CD", cd)
 
-
-
+	
 }

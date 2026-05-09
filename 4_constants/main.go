@@ -20,8 +20,7 @@ fmt.Println("Lang", lang)
 fmt.Println("Lang", langName)
 
 
-	// Grouped( Block) const declaration: 
-
+	// NOTE: Grouped( Block) const declaration: 
 	const (
 		a = 20 // UnTyped, 
 		b string = "Rajib"
