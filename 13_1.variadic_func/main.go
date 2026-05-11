@@ -16,6 +16,16 @@ var numsTotal = func(a ...int) {
 
 }
 
+var log = func(prefix string, params ...interface{}) {
+
+	fmt.Print(prefix, " : ")
+	for _, value := range params {
+		fmt.Print(value, " ")
+	}
+	fmt.Print("\n")
+
+}
+
 func main() {
 
 	// 1. Wait youtube interfaces
@@ -26,4 +36,9 @@ func main() {
 	numsTotal(2, 3, 6)
 	numsTotal(2, 3, 6, 7, 2)
 	numsTotal(2, 3, 6, 7, 2, 5)
+
+	// Call logger:
+	log("INFO", 1, 2, "Mostafizur")
+	log("Error", 1, 2, "Mostafizur")
+
 }
