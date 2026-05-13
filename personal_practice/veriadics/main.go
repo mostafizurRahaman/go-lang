@@ -35,4 +35,8 @@ func main() {
 
 	fmt.Println("Print", sumUp(20, 20, 20, 10))
 
+	nums := []int{2, 3, 5, 5, 6}
+
+	sumUp(nums...)
+
 }
