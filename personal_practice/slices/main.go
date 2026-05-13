@@ -33,7 +33,7 @@ func main() {
 
 	// ! 2. Declare a slice with make() :-> for var/ :=
 
-	slice2 := make([]int, 2, 2) // ! parameters: type, length, capacity
+	slice2 := make([]int, 2, 3) // ! parameters: type, length, capacity
 	// ! If capacity not provided, the default capacity will be equal to length.
 	fmt.Println(slice2)
 
