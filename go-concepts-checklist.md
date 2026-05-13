@@ -109,6 +109,10 @@ confidently.
 - [ ] I can slice a slice with `[:]` notation.
 - [ ] I know the difference between length and capacity of a slice.
 - [ ] I understand how `append` may allocate a new underlying array.
+- [ ] I know to to `copy` slice from source slice to destination slice.
+- [ ] I know how to `Declare 2D Slice`.
+- [ ] I Know how about `slices` built in functions for equality, comparision,
+      sorting.
 
 ---
 
