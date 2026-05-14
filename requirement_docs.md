@@ -520,4 +520,5 @@ Completed
 
 ## Storage
 
-- AWS S3 / Cloud Storage
+- AWS S3 / Cloud Storage 
+- Deployment
