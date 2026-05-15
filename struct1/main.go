@@ -88,8 +88,21 @@ func main() {
 	}
 	fmt.Println(secondOrder)
 
-	// Create another instance from constructor:
+	// ! Create another instance from constructor:
 	thirdOrder := newOrder(4, "Nm sujon", "nm@gmail.com", "pending")
 	fmt.Println(thirdOrder)
 
+	// ! Create an  struct for single instance only:
+	// ! declaration and instance  creation  same line
+
+	language := struct {
+		secret_key string
+		web_secret string
+	}{
+		secret_key: "Mostafiz",
+		web_secret: "Ratul Hossain",
+	}
+
+	fmt.Println(language)
+	fmt.Println(language.secret_key)
 }
