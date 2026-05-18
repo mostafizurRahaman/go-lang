@@ -1,0 +1,1903 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Go Channel — বাংলা ডকুমেন্টেশন</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0d1117;
+    --bg2:       #161b22;
+    --bg3:       #21262d;
+    --border:    #30363d;
+    --accent:    #00d4aa;
+    --accent2:   #7ee787;
+    --accent3:   #ffa657;
+    --accent4:   #f78166;
+    --accent5:   #79c0ff;
+    --text:      #e6edf3;
+    --text2:     #8b949e;
+    --text3:     #c9d1d9;
+    --purple:    #d2a8ff;
+    --yellow:    #e3b341;
+    --red:       #f85149;
+    --sidebar-w: 280px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Hind Siliguri', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    font-size: 16px;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ───────────────────────────────────────── */
+  .sidebar {
+    width: var(--sidebar-w);
+    min-height: 100vh;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    position: fixed;
+    top: 0; left: 0;
+    overflow-y: auto;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-logo {
+    padding: 24px 20px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-logo .go-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #00add8, #00d4aa);
+    color: #000;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 8px;
+  }
+  .sidebar-logo h2 {
+    font-size: 15px;
+    color: var(--text);
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .sidebar-logo p {
+    font-size: 12px;
+    color: var(--text2);
+    margin-top: 4px;
+  }
+
+  .sidebar-nav { padding: 12px 0 40px; }
+  .nav-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text2);
+    padding: 14px 20px 6px;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 20px;
+    color: var(--text2);
+    text-decoration: none;
+    font-size: 13.5px;
+    transition: all .15s;
+    border-left: 3px solid transparent;
+    line-height: 1.4;
+  }
+  .nav-item:hover { color: var(--text); background: var(--bg3); }
+  .nav-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(0,212,170,.06); }
+  .nav-item .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+  .nav-item.active .dot { background: var(--accent); }
+
+  /* ── MAIN ──────────────────────────────────────────── */
+  .main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    max-width: 100%;
+  }
+
+  /* ── HERO ──────────────────────────────────────────── */
+  .hero {
+    background: linear-gradient(135deg, #0d1117 0%, #0a1628 50%, #0d1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 72px 64px 56px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(0,212,170,.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: 200px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(121,192,255,.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-family: 'Tiro Bangla', serif;
+    font-size: 44px;
+    font-weight: 400;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero-sub {
+    font-size: 17px;
+    color: var(--text2);
+    max-width: 600px;
+    line-height: 1.8;
+  }
+  .hero-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 28px;
+  }
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid;
+  }
+  .tag-green { color: var(--accent2); border-color: rgba(126,231,135,.3); background: rgba(126,231,135,.06); }
+  .tag-blue  { color: var(--accent5); border-color: rgba(121,192,255,.3); background: rgba(121,192,255,.06); }
+  .tag-orange{ color: var(--accent3); border-color: rgba(255,166,87,.3);  background: rgba(255,166,87,.06); }
+  .tag-purple{ color: var(--purple);  border-color: rgba(210,168,255,.3); background: rgba(210,168,255,.06); }
+
+  /* ── CONTENT ───────────────────────────────────────── */
+  .content { padding: 48px 64px 80px; max-width: 900px; }
+
+  /* ── SECTION ───────────────────────────────────────── */
+  .section {
+    margin-bottom: 72px;
+    scroll-margin-top: 24px;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(0,212,170,.1);
+    border: 1px solid rgba(0,212,170,.25);
+    padding: 3px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .section-title {
+    font-family: 'Tiro Bangla', serif;
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+    margin-bottom: 28px;
+  }
+
+  /* ── SUBSECTION ─────────────────────────────────────── */
+  .subsection {
+    margin-bottom: 40px;
+  }
+  .subsection-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--accent5);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .subsection-title::before {
+    content: '';
+    display: inline-block;
+    width: 3px; height: 18px;
+    background: var(--accent5);
+    border-radius: 2px;
+  }
+
+  /* ── PROSE ──────────────────────────────────────────── */
+  p { color: var(--text3); margin-bottom: 14px; font-size: 15.5px; }
+  strong { color: var(--text); font-weight: 600; }
+  em { color: var(--accent3); font-style: normal; font-weight: 500; }
+
+  ul, ol { padding-left: 24px; margin-bottom: 16px; }
+  li { color: var(--text3); margin-bottom: 6px; font-size: 15px; }
+  li::marker { color: var(--accent); }
+
+  /* ── CALLOUT ────────────────────────────────────────── */
+  .callout {
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    border-left: 4px solid;
+    font-size: 15px;
+  }
+  .callout-info  { background: rgba(121,192,255,.07); border-color: var(--accent5); }
+  .callout-warn  { background: rgba(255,166,87,.07);  border-color: var(--accent3); }
+  .callout-danger{ background: rgba(248,81,73,.07);   border-color: var(--red); }
+  .callout-tip   { background: rgba(0,212,170,.07);   border-color: var(--accent); }
+  .callout-title {
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .callout-info  .callout-title { color: var(--accent5); }
+  .callout-warn  .callout-title { color: var(--accent3); }
+  .callout-danger .callout-title { color: var(--red); }
+  .callout-tip   .callout-title { color: var(--accent); }
+  .callout p { margin: 0; }
+
+  /* ── CODE BLOCK ─────────────────────────────────────── */
+  .code-block {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 20px 0;
+    overflow: hidden;
+  }
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+  }
+  .code-lang {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .code-label {
+    font-size: 12px;
+    color: var(--text2);
+  }
+  .copy-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 3px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .copy-btn.copied { border-color: var(--accent2); color: var(--accent2); }
+
+  pre {
+    padding: 20px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    line-height: 1.8;
+  }
+
+  /* syntax highlight classes */
+  .kw  { color: #ff7b72; }   /* keywords */
+  .fn  { color: #d2a8ff; }   /* func names */
+  .ty  { color: #79c0ff; }   /* types */
+  .st  { color: #a5d6ff; }   /* strings */
+  .cm  { color: #8b949e; font-style: italic; } /* comments */
+  .nb  { color: #ffa657; }   /* numbers / builtins */
+  .op  { color: #ff7b72; }   /* operators */
+  .id  { color: #e6edf3; }   /* identifiers */
+  .ch  { color: #7ee787; }   /* channel ops */
+
+  /* ── SCENARIO CARD ──────────────────────────────────── */
+  .scenario-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .scenario-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    transition: border-color .2s;
+  }
+  .scenario-card:hover { border-color: var(--accent); }
+  .scenario-card h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent5);
+    margin-bottom: 8px;
+  }
+  .scenario-card p { font-size: 13.5px; margin: 0; }
+
+  /* ── COMPARISON TABLE ───────────────────────────────── */
+  .table-wrap { overflow-x: auto; margin: 20px 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  th {
+    background: var(--bg3);
+    color: var(--accent);
+    font-weight: 600;
+    padding: 10px 16px;
+    text-align: left;
+    border: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: .5px;
+  }
+  td {
+    padding: 10px 16px;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: rgba(255,255,255,.02); }
+
+  /* ── INLINE CODE ────────────────────────────────────── */
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: .88em;
+    color: var(--accent3);
+  }
+
+  /* ── PROGRESS BAR ───────────────────────────────────── */
+  .toc-progress {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--border);
+    z-index: 200;
+  }
+  .toc-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent5));
+    width: 0%;
+    transition: width .1s;
+  }
+
+  /* ── FLOW DIAGRAM ───────────────────────────────────── */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 24px 0;
+    flex-wrap: wrap;
+  }
+  .flow-box {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text);
+    text-align: center;
+    min-width: 100px;
+  }
+  .flow-box.goroutine { border-color: var(--accent5); color: var(--accent5); }
+  .flow-box.channel   { border-color: var(--accent);  color: var(--accent); background: rgba(0,212,170,.08); }
+  .flow-box.result    { border-color: var(--accent2); color: var(--accent2); }
+  .flow-arrow {
+    font-size: 20px;
+    color: var(--text2);
+    padding: 0 8px;
+    flex-shrink: 0;
+  }
+
+  /* ── BADGE ──────────────────────────────────────────── */
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .badge-new    { background: rgba(0,212,170,.15); color: var(--accent); border: 1px solid rgba(0,212,170,.3); }
+  .badge-adv    { background: rgba(255,166,87,.15); color: var(--accent3); border: 1px solid rgba(255,166,87,.3); }
+  .badge-danger { background: rgba(248,81,73,.15); color: var(--red); border: 1px solid rgba(248,81,73,.3); }
+
+  /* ── SCROLLBAR ──────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text2); }
+
+  /* ── RESPONSIVE ─────────────────────────────────────── */
+  @media (max-width: 900px) {
+    .sidebar { transform: translateX(-100%); transition: transform .3s; }
+    .sidebar.open { transform: translateX(0); }
+    .main { margin-left: 0; }
+    .hero, .content { padding-left: 24px; padding-right: 24px; }
+    .hero h1 { font-size: 30px; }
+    .scenario-grid { grid-template-columns: 1fr; }
+    .mobile-menu {
+      display: flex !important;
+      position: fixed; bottom: 20px; right: 20px; z-index: 300;
+      width: 50px; height: 50px; border-radius: 50%;
+      background: var(--accent); color: #000;
+      border: none; font-size: 22px; cursor: pointer;
+      align-items: center; justify-content: center;
+      box-shadow: 0 4px 20px rgba(0,212,170,.4);
+    }
+  }
+  .mobile-menu { display: none; }
+</style>
+</head>
+<body>
+
+<div class="toc-progress"><div class="toc-progress-bar" id="progressBar"></div></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="go-badge">⟨ Go ⟩</div>
+    <h2>Channel সম্পূর্ণ গাইড</h2>
+    <p>বাংলা ডকুমেন্টেশন</p>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-title">মূল বিষয়</div>
+    <a href="#intro"      class="nav-item active"><span class="dot"></span>Channel কী?</a>
+    <a href="#types"      class="nav-item"><span class="dot"></span>Channel-এর ধরন</a>
+    <a href="#basic"      class="nav-item"><span class="dot"></span>তৈরি ও ব্যবহার</a>
+    <a href="#unbuffered" class="nav-item"><span class="dot"></span>Unbuffered Channel</a>
+    <a href="#buffered"   class="nav-item"><span class="dot"></span>Buffered Channel</a>
+
+    <div class="nav-section-title">দিকনির্দেশনামূলক</div>
+    <a href="#direction"  class="nav-item"><span class="dot"></span>Directional Channel</a>
+    <a href="#range"      class="nav-item"><span class="dot"></span>Range দিয়ে পড়া</a>
+    <a href="#close"      class="nav-item"><span class="dot"></span>Channel বন্ধ করা</a>
+
+    <div class="nav-section-title">উন্নত বিষয়</div>
+    <a href="#select"     class="nav-item"><span class="dot"></span>Select Statement</a>
+    <a href="#timeout"    class="nav-item"><span class="dot"></span>Timeout প্যাটার্ন</a>
+    <a href="#pipeline"   class="nav-item"><span class="dot"></span>Pipeline প্যাটার্ন</a>
+    <a href="#fanout"     class="nav-item"><span class="dot"></span>Fan-Out / Fan-In</a>
+    <a href="#worker"     class="nav-item"><span class="dot"></span>Worker Pool</a>
+    <a href="#done"       class="nav-item"><span class="dot"></span>Done Channel</a>
+    <a href="#nil"        class="nav-item"><span class="dot"></span>Nil Channel</a>
+    <a href="#errors"     class="nav-item"><span class="dot"></span>সাধারণ ভুল</a>
+    <a href="#patterns"   class="nav-item"><span class="dot"></span>বাস্তব প্যাটার্ন</a>
+    <a href="#cheatsheet" class="nav-item"><span class="dot"></span>Cheat Sheet</a>
+  </nav>
+</aside>
+
+<button class="mobile-menu" id="mobileMenu" onclick="toggleSidebar()">☰</button>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">// GOLANG · বাংলা ডকুমেন্টেশন</div>
+    <h1>Go <span>Channel</span><br>সম্পূর্ণ শিক্ষার গাইড</h1>
+    <p class="hero-sub">
+      Goroutine-দের মধ্যে যোগাযোগের মূল হাতিয়ার — Channel। এই গাইডে প্রতিটি ধরনের Channel,
+      সব রকমের প্যাটার্ন এবং বাস্তব উদাহরণ দিয়ে শিখুন সম্পূর্ণ বাংলায়।
+    </p>
+    <div class="hero-tags">
+      <span class="tag tag-green">Unbuffered</span>
+      <span class="tag tag-blue">Buffered</span>
+      <span class="tag tag-orange">Directional</span>
+      <span class="tag tag-purple">Select</span>
+      <span class="tag tag-green">Pipeline</span>
+      <span class="tag tag-blue">Fan-Out</span>
+      <span class="tag tag-orange">Worker Pool</span>
+      <span class="tag tag-purple">Done Channel</span>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 01. INTRO -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="intro">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Channel কী এবং কেন দরকার?</h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <p>
+        Go প্রোগ্রামিং ভাষায় <strong>Channel</strong> হল দুটি Goroutine-এর মধ্যে ডেটা পাঠানোর
+        একটি <em>পাইপ</em> বা নালী। একটি Goroutine Channel-এ ডেটা পাঠায়, আরেকটি সেটি গ্রহণ করে।
+      </p>
+
+      <p>
+        Go-এর বিখ্যাত দর্শন হল:
+      </p>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">💬 Go Philosophy</div>
+        <p><strong>"Do not communicate by sharing memory; instead, share memory by communicating."</strong><br>
+        অর্থাৎ — শেয়ার্ড মেমরি দিয়ে যোগাযোগ করো না, বরং যোগাযোগের মাধ্যমে মেমরি শেয়ার করো।</p>
+      </div>
+
+      <div class="flow">
+        <div class="flow-box goroutine">Goroutine A<br><small>প্রেরক</small></div>
+        <div class="flow-arrow">──<span style="color:var(--accent)">▶</span></div>
+        <div class="flow-box channel">Channel<br><small>ch ← data</small></div>
+        <div class="flow-arrow">──<span style="color:var(--accent)">▶</span></div>
+        <div class="flow-box goroutine">Goroutine B<br><small>গ্রাহক</small></div>
+        <div class="flow-arrow">──<span style="color:var(--accent2)">▶</span></div>
+        <div class="flow-box result">ফলাফল</div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Channel ছাড়া কী সমস্যা?</h3>
+        <div class="scenario-grid">
+          <div class="scenario-card">
+            <h4>⚠️ Race Condition</h4>
+            <p>একাধিক Goroutine একই ভেরিয়েবল পড়লে/লিখলে ডেটা নষ্ট হয়। Channel এটি এড়ায়।</p>
+          </div>
+          <div class="scenario-card">
+            <h4>🔒 Mutex জটিলতা</h4>
+            <p>Mutex দিয়ে lock/unlock ম্যানেজ করা কঠিন ও বাগ-প্রবণ। Channel বেশি পরিষ্কার।</p>
+          </div>
+          <div class="scenario-card">
+            <h4>📡 সমন্বয়হীনতা</h4>
+            <p>কোন Goroutine কখন শেষ হল জানা কঠিন। Channel দিয়ে সহজে সংকেত দেওয়া যায়।</p>
+          </div>
+          <div class="scenario-card">
+            <h4>💥 Deadlock</h4>
+            <p>ভুল ব্যবহারে Deadlock হয়। Channel-এর নিয়ম বোঝা থাকলে এড়ানো সহজ।</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 02. TYPES -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="types">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Channel-এর ধরনসমূহ</h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ধরন</th>
+              <th>সংজ্ঞা</th>
+              <th>Buffer আছে?</th>
+              <th>Block করে কখন?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>make(chan T)</code></td>
+              <td>Unbuffered Channel</td>
+              <td>না</td>
+              <td>সবসময় — যতক্ষণ না অন্যপাশ প্রস্তুত</td>
+            </tr>
+            <tr>
+              <td><code>make(chan T, n)</code></td>
+              <td>Buffered Channel</td>
+              <td>হ্যাঁ (n টি)</td>
+              <td>Buffer পূর্ণ হলে send; খালি হলে receive</td>
+            </tr>
+            <tr>
+              <td><code>chan&lt;- T</code></td>
+              <td>Send-only Channel</td>
+              <td>উভয়</td>
+              <td>উপরের মতো, শুধু পাঠানো যায়</td>
+            </tr>
+            <tr>
+              <td><code>&lt;-chan T</code></td>
+              <td>Receive-only Channel</td>
+              <td>উভয়</td>
+              <td>উপরের মতো, শুধু গ্রহণ করা যায়</td>
+            </tr>
+            <tr>
+              <td><code>var ch chan T</code></td>
+              <td>Nil Channel</td>
+              <td>না</td>
+              <td>চিরকাল block করে</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 03. BASIC -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="basic">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Channel তৈরি ও মৌলিক অপারেশন</h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <p>Channel তৈরি করতে <code>make()</code> ফাংশন ব্যবহার করতে হয়। তিনটি মৌলিক অপারেশন আছে:</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">go</span>
+          <span class="code-label">channel-basic.go</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        </div>
+        <pre><span class="kw">package</span> <span class="id">main</span>
+
+<span class="kw">import</span> <span class="st">"fmt"</span>
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    <span class="cm">// ১. Channel তৈরি করা</span>
+    <span class="id">ch</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">int</span>)  <span class="cm">// Unbuffered channel</span>
+
+    <span class="cm">// ২. Goroutine-এ পাঠানো (অবশ্যই goroutine-এ, নয়তো deadlock)</span>
+    <span class="kw">go func</span>() {
+        <span class="ch">ch &lt;-</span> <span class="nb">42</span>  <span class="cm">// Send: channel-এ 42 পাঠাও</span>
+    }()
+
+    <span class="cm">// ৩. গ্রহণ করা</span>
+    <span class="id">value</span> <span class="op">:=</span> <span class="ch">&lt;-ch</span>  <span class="cm">// Receive: channel থেকে পাও</span>
+    <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"পাওয়া গেছে:"</span>, <span class="id">value</span>)  <span class="cm">// পাওয়া গেছে: 42</span>
+
+    <span class="cm">// ৪. গ্রহণ করে ফেলে দেওয়া (শুধু sync করতে)</span>
+    <span class="id">done</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="kw">struct</span>{})
+    <span class="kw">go func</span>() {
+        <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"কাজ হচ্ছে..."</span>)
+        <span class="ch">done &lt;-</span> <span class="kw">struct</span>{}{}  <span class="cm">// সংকেত পাঠাও</span>
+    }()
+    <span class="ch">&lt;-done</span>  <span class="cm">// সংকেতের জন্য অপেক্ষা করো</span>
+    <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"কাজ শেষ!"</span>)
+}</pre>
+      </div>
+
+      <div class="callout callout-info">
+        <div class="callout-title">ℹ️ অপারেটর</div>
+        <p><code>&lt;-ch</code> মানে "channel থেকে পাও" · <code>ch &lt;- v</code> মানে "channel-এ v পাঠাও"। তীরের দিক লক্ষ্য করো — সবসময় channel-এর দিকে যায়।</p>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 04. UNBUFFERED -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="unbuffered">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Unbuffered Channel</h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <p>
+        Unbuffered Channel-এ কোনো জায়গা নেই। প্রেরক পাঠাতে পারবে না যতক্ষণ না গ্রাহক প্রস্তুত থাকে,
+        এবং গ্রাহক পাবে না যতক্ষণ না প্রেরক পাঠায়। এটি <em>synchronous handoff</em> — হাতে হাত বদল।
+      </p>
+
+      <div class="flow">
+        <div class="flow-box goroutine">Sender<br><small>ch ← 42</small></div>
+        <div class="flow-arrow">🔴 block</div>
+        <div class="flow-box channel">Channel<br><small>(ফাঁকা)</small></div>
+        <div class="flow-arrow">🔴 block</div>
+        <div class="flow-box goroutine">Receiver<br><small>← ch</small></div>
+      </div>
+      <p style="text-align:center;color:var(--accent);font-size:13px;margin-top:-8px;margin-bottom:24px;">
+        উভয়পক্ষ প্রস্তুত হলেই ডেটা বদল হয় — একসাথে!
+      </p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">go</span>
+          <span class="code-label">unbuffered-channel.go</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        </div>
+        <pre><span class="kw">package</span> <span class="id">main</span>
+
+<span class="kw">import</span> (
+    <span class="st">"fmt"</span>
+    <span class="st">"time"</span>
+)
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    <span class="id">ch</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">string</span>)  <span class="cm">// Unbuffered</span>
+
+    <span class="cm">// প্রেরক goroutine</span>
+    <span class="kw">go func</span>() {
+        <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"[প্রেরক] পাঠানোর আগে..."</span>)
+        <span class="id">time</span>.<span class="fn">Sleep</span>(<span class="nb">1</span> <span class="op">*</span> <span class="id">time</span>.<span class="id">Second</span>)
+        <span class="ch">ch <span class="op">&lt;-</span></span> <span class="st">"নমস্কার!"</span>  <span class="cm">// গ্রাহক প্রস্তুত না হওয়া পর্যন্ত block</span>
+        <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"[প্রেরক] পাঠানো হয়েছে!"</span>)
+    }()
+
+    <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"[গ্রাহক] প্রাপ্তির অপেক্ষায়..."</span>)
+    <span class="id">msg</span> <span class="op">:=</span> <span class="ch">&lt;-<span class="id">ch</span></span>  <span class="cm">// প্রেরক না পাঠানো পর্যন্ত block</span>
+    <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"[গ্রাহক] পেয়েছি:"</span>, <span class="id">msg</span>)
+}
+
+<span class="cm">/* আউটপুট:
+[গ্রাহক] প্রাপ্তির অপেক্ষায়...
+[প্রেরক] পাঠানোর আগে...
+[প্রেরক] পাঠানো হয়েছে!
+[গ্রাহক] পেয়েছি: নমস্কার!
+*/</span></pre>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Unbuffered-এর ব্যবহারক্ষেত্র</h3>
+        <ul>
+          <li><strong>Synchronization:</strong> দুটি Goroutine-এর কাজ একটি নির্দিষ্ট পয়েন্টে মেলানো</li>
+          <li><strong>Guarantee:</strong> নিশ্চিত করা যে ডেটা পাঠানোর আগেই গ্রাহক প্রস্তুত</li>
+          <li><strong>Ping-Pong:</strong> পর্যায়ক্রমিক হাতবদল প্যাটার্ন</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 05. BUFFERED -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="buffered">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Buffered Channel</h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <p>
+        Buffered Channel-এ নির্দিষ্ট সংখ্যক আইটেম রাখার জায়গা আছে।
+        Buffer পূর্ণ না হওয়া পর্যন্ত প্রেরক block হয় না। এটি <em>asynchronous</em>।
+      </p>
+
+      <div class="flow">
+        <div class="flow-box goroutine">Sender</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box channel">[ 1 | 2 | 3 ]<br><small>Buffer (cap=3)</small></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box goroutine">Receiver</div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">go</span>
+          <span class="code-label">buffered-channel.go</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        </div>
+        <pre><span class="kw">package</span> <span class="id">main</span>
+
+<span class="kw">import</span> <span class="st">"fmt"</span>
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    <span class="cm">// ধারণক্ষমতা ৩-এর buffered channel</span>
+    <span class="id">ch</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">int</span>, <span class="nb">3</span>)
+
+    <span class="cm">// গ্রাহক ছাড়াই তিনটি পাঠানো যাবে — block হবে না</span>
+    <span class="ch">ch <span class="op">&lt;-</span></span> <span class="nb">10</span>
+    <span class="ch">ch <span class="op">&lt;-</span></span> <span class="nb">20</span>
+    <span class="ch">ch <span class="op">&lt;-</span></span> <span class="nb">30</span>
+    <span class="cm">// ch &lt;- 40  // এটি লিখলে deadlock! buffer পূর্ণ</span>
+
+    <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"Buffer-এ আছে:"</span>, <span class="nb">len</span>(<span class="id">ch</span>), <span class="st">"টি"</span>)       <span class="cm">// 3</span>
+    <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"মোট ধারণক্ষমতা:"</span>, <span class="nb">cap</span>(<span class="id">ch</span>), <span class="st">"টি"</span>)  <span class="cm">// 3</span>
+
+    <span class="cm">// পড়া</span>
+    <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="ch">&lt;-<span class="id">ch</span></span>)  <span class="cm">// 10</span>
+    <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="ch">&lt;-<span class="id">ch</span></span>)  <span class="cm">// 20</span>
+    <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="ch">&lt;-<span class="id">ch</span></span>)  <span class="cm">// 30</span>
+}
+
+<span class="cm">// ─── Unbuffered vs Buffered তুলনা ───</span>
+<span class="kw">func</span> <span class="fn">comparison</span>() {
+    <span class="cm">// Unbuffered: পাঠাতে গেলেই block, গ্রাহক না থাকলে</span>
+    <span class="id">ub</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">int</span>)
+
+    <span class="cm">// Buffered: buffer খালি থাকলে পাঠানো যায়</span>
+    <span class="id">bf</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">int</span>, <span class="nb">5</span>)
+
+    <span class="kw">_</span> = <span class="id">ub</span>
+    <span class="kw">_</span> = <span class="id">bf</span>
+}</pre>
+      </div>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ সতর্কতা</div>
+        <p>Buffered Channel-এর আকার ঠিক না করলে সমস্যা হয়। অনেক বড় buffer মেমরি নষ্ট করে; অনেক ছোট buffer Deadlock ডাকে।</p>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">len() এবং cap() ফাংশন</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ফাংশন</th><th>কী করে</th><th>উদাহরণ</th></tr></thead>
+            <tbody>
+              <tr><td><code>len(ch)</code></td><td>এখন buffer-এ কতটি আইটেম আছে</td><td><code>len(ch) == 2</code></td></tr>
+              <tr><td><code>cap(ch)</code></td><td>মোট কতটি আইটেম ধরে</td><td><code>cap(ch) == 5</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 06. DIRECTION -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="direction">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Directional (দিকনির্দেশক) Channel</h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <p>
+        ফাংশনের প্যারামিটারে Channel-এর দিক নির্দিষ্ট করা যায়। এতে কোড নিরাপদ হয় —
+        ভুল দিকে পাঠালে <em>compile-time error</em> পাওয়া যায়।
+      </p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">go</span>
+          <span class="code-label">directional-channel.go</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        </div>
+        <pre><span class="kw">package</span> <span class="id">main</span>
+
+<span class="kw">import</span> <span class="st">"fmt"</span>
+
+<span class="cm">// শুধু পাঠাতে পারে: chan&lt;- int</span>
+<span class="kw">func</span> <span class="fn">producer</span>(<span class="id">out</span> <span class="kw">chan&lt;-</span> <span class="ty">int</span>) {
+    <span class="kw">for</span> <span class="id">i</span> <span class="op">:=</span> <span class="nb">1</span>; <span class="id">i</span> <span class="op">&lt;=</span> <span class="nb">5</span>; <span class="id">i</span><span class="op">++</span> {
+        <span class="ch">out <span class="op">&lt;-</span></span> <span class="id">i</span>  <span class="cm">// ✅ পাঠানো যাবে</span>
+    }
+    <span class="nb">close</span>(<span class="id">out</span>)
+    <span class="cm">// &lt;-out  // ❌ compile error: cannot receive from send-only channel</span>
+}
+
+<span class="cm">// শুধু গ্রহণ করতে পারে: &lt;-chan int</span>
+<span class="kw">func</span> <span class="fn">consumer</span>(<span class="id">in</span> <span class="kw">&lt;-chan</span> <span class="ty">int</span>) {
+    <span class="kw">for</span> <span class="id">v</span> <span class="op">:=</span> <span class="kw">range</span> <span class="id">in</span> {
+        <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"পেয়েছি:"</span>, <span class="id">v</span>)
+    }
+    <span class="cm">// in &lt;- 5  // ❌ compile error: cannot send to receive-only channel</span>
+}
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    <span class="id">ch</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">int</span>, <span class="nb">5</span>)
+
+    <span class="cm">// bidirectional channel কে directional হিসেবে পাস করা যায়</span>
+    <span class="kw">go</span> <span class="fn">producer</span>(<span class="id">ch</span>)   <span class="cm">// chan int → chan&lt;- int (স্বয়ংক্রিয় রূপান্তর)</span>
+    <span class="fn">consumer</span>(<span class="id">ch</span>)     <span class="cm">// chan int → &lt;-chan int (স্বয়ংক্রিয় রূপান্তর)</span>
+}
+
+<span class="cm">/* আউটপুট:
+পেয়েছি: 1
+পেয়েছি: 2
+পেয়েছি: 3
+পেয়েছি: 4
+পেয়েছি: 5
+*/</span></pre>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">💡 সেরা অভ্যাস</div>
+        <p>ফাংশনে Channel পাস করার সময় সবসময় দিক নির্দিষ্ট করো। এটি কোডের উদ্দেশ্য স্পষ্ট করে এবং বাগ কমায়।</p>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 07. RANGE -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="range">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Range দিয়ে Channel পড়া</h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <p>
+        <code>for range</code> দিয়ে Channel থেকে পর্যায়ক্রমে সব ডেটা পড়া যায়।
+        Channel বন্ধ (<code>close()</code>) না হওয়া পর্যন্ত loop চলতে থাকে।
+      </p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">go</span>
+          <span class="code-label">range-channel.go</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        </div>
+        <pre><span class="kw">package</span> <span class="id">main</span>
+
+<span class="kw">import</span> <span class="st">"fmt"</span>
+
+<span class="kw">func</span> <span class="fn">generate</span>(<span class="id">nums</span> ...<span class="ty">int</span>) <span class="kw">&lt;-chan</span> <span class="ty">int</span> {
+    <span class="id">out</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">int</span>)
+    <span class="kw">go func</span>() {
+        <span class="kw">defer</span> <span class="nb">close</span>(<span class="id">out</span>)  <span class="cm">// কাজ শেষে অবশ্যই বন্ধ করো</span>
+        <span class="kw">for</span> <span class="kw">_</span>, <span class="id">n</span> <span class="op">:=</span> <span class="kw">range</span> <span class="id">nums</span> {
+            <span class="ch">out <span class="op">&lt;-</span></span> <span class="id">n</span>
+        }
+    }()
+    <span class="kw">return</span> <span class="id">out</span>
+}
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    <span class="id">ch</span> <span class="op">:=</span> <span class="fn">generate</span>(<span class="nb">10</span>, <span class="nb">20</span>, <span class="nb">30</span>, <span class="nb">40</span>, <span class="nb">50</span>)
+
+    <span class="cm">// range channel — close() না হওয়া পর্যন্ত চলবে</span>
+    <span class="kw">for</span> <span class="id">v</span> <span class="op">:=</span> <span class="kw">range</span> <span class="id">ch</span> {
+        <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="id">v</span>)
+    }
+    <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"শেষ!"</span>)
+
+    <span class="cm">// ─── ok idiom: channel বন্ধ কিনা পরীক্ষা ───</span>
+    <span class="id">ch2</span> <span class="op">:=</span> <span class="fn">generate</span>(<span class="nb">1</span>, <span class="nb">2</span>)
+    <span class="id">v1</span>, <span class="id">ok1</span> <span class="op">:=</span> <span class="ch">&lt;-<span class="id">ch2</span></span>
+    <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="id">v1</span>, <span class="id">ok1</span>)  <span class="cm">// 1, true  (channel খোলা)</span>
+    <span class="id">v2</span>, <span class="id">ok2</span> <span class="op">:=</span> <span class="ch">&lt;-<span class="id">ch2</span></span>
+    <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="id">v2</span>, <span class="id">ok2</span>)  <span class="cm">// 2, true</span>
+    <span class="id">v3</span>, <span class="id">ok3</span> <span class="op">:=</span> <span class="ch">&lt;-<span class="id">ch2</span></span>
+    <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="id">v3</span>, <span class="id">ok3</span>)  <span class="cm">// 0, false (channel বন্ধ, zero value)</span>
+}</pre>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 08. CLOSE -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="close">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2 class="section-title">Channel বন্ধ করা</h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <p>
+        <code>close(ch)</code> দিয়ে channel বন্ধ করা হয়। এরপর কেউ পাঠাতে পারবে না,
+        কিন্তু বাকি ডেটা পড়া যাবে।
+      </p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">go</span>
+          <span class="code-label">close-channel.go</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        </div>
+        <pre><span class="kw">package</span> <span class="id">main</span>
+
+<span class="kw">import</span> <span class="st">"fmt"</span>
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    <span class="id">ch</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">int</span>, <span class="nb">3</span>)
+    <span class="ch">ch <span class="op">&lt;-</span></span> <span class="nb">1</span>
+    <span class="ch">ch <span class="op">&lt;-</span></span> <span class="nb">2</span>
+    <span class="ch">ch <span class="op">&lt;-</span></span> <span class="nb">3</span>
+    <span class="nb">close</span>(<span class="id">ch</span>)  <span class="cm">// channel বন্ধ</span>
+
+    <span class="cm">// বন্ধ channel থেকে বাকি ডেটা পড়া যায়</span>
+    <span class="kw">for</span> <span class="id">v</span> <span class="op">:=</span> <span class="kw">range</span> <span class="id">ch</span> {
+        <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="id">v</span>)  <span class="cm">// 1, 2, 3</span>
+    }
+
+    <span class="cm">// বন্ধ channel থেকে পড়লে zero value আসে</span>
+    <span class="id">v</span>, <span class="id">ok</span> <span class="op">:=</span> <span class="ch">&lt;-<span class="id">ch</span></span>
+    <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="id">v</span>, <span class="id">ok</span>)  <span class="cm">// 0, false</span>
+
+    <span class="cm">// close() শুধু প্রেরকই করবে, গ্রাহক কখনো নয়!</span>
+    <span class="cm">// defer close(ch) ব্যবহার করো নিরাপদ থাকতে</span>
+}</pre>
+      </div>
+
+      <div class="callout callout-danger">
+        <div class="callout-title">🚨 বন্ধ channel-এ পাঠানো Panic</div>
+        <p>বন্ধ channel-এ পাঠালে প্যানিক হয়: <code>send on closed channel</code>। সবসময় শুধু প্রেরকই channel বন্ধ করবে। গ্রাহক কখনো <code>close()</code> ডাকবে না।</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>পরিস্থিতি</th><th>ফলাফল</th></tr></thead>
+          <tbody>
+            <tr><td>খোলা channel-এ send (গ্রাহক নেই)</td><td>Block হয়</td></tr>
+            <tr><td>বন্ধ channel-এ send</td><td><strong style="color:var(--red)">Panic!</strong></td></tr>
+            <tr><td>বন্ধ channel থেকে receive (ডেটা আছে)</td><td>ডেটা পায়, ok=true</td></tr>
+            <tr><td>বন্ধ channel থেকে receive (ডেটা নেই)</td><td>zero value পায়, ok=false</td></tr>
+            <tr><td>nil channel-এ send বা receive</td><td>চিরকাল block</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 09. SELECT -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="select">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <h2 class="section-title">Select Statement <span class="badge badge-adv">উন্নত</span></h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <p>
+        <code>select</code> হল Channel-এর জন্য <code>switch</code>। একাধিক channel-এর মধ্যে
+        যেটি প্রস্তুত সেটি থেকে কাজ করে। যদি একাধিক প্রস্তুত থাকে, <em>র্যান্ডমলি একটি বেছে নেয়</em>।
+      </p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">go</span>
+          <span class="code-label">select-statement.go</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        </div>
+        <pre><span class="kw">package</span> <span class="id">main</span>
+
+<span class="kw">import</span> (
+    <span class="st">"fmt"</span>
+    <span class="st">"time"</span>
+)
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    <span class="id">ch1</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">string</span>)
+    <span class="id">ch2</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">string</span>)
+
+    <span class="kw">go func</span>() {
+        <span class="id">time</span>.<span class="fn">Sleep</span>(<span class="nb">2</span> <span class="op">*</span> <span class="id">time</span>.<span class="id">Second</span>)
+        <span class="ch">ch1 <span class="op">&lt;-</span></span> <span class="st">"একটি"</span>
+    }()
+
+    <span class="kw">go func</span>() {
+        <span class="id">time</span>.<span class="fn">Sleep</span>(<span class="nb">1</span> <span class="op">*</span> <span class="id">time</span>.<span class="id">Second</span>)
+        <span class="ch">ch2 <span class="op">&lt;-</span></span> <span class="st">"দুই"</span>
+    }()
+
+    <span class="cm">// যে channel আগে প্রস্তুত সেটি থেকে নেবে</span>
+    <span class="kw">for</span> <span class="id">i</span> <span class="op">:=</span> <span class="nb">0</span>; <span class="id">i</span> <span class="op">&lt;</span> <span class="nb">2</span>; <span class="id">i</span><span class="op">++</span> {
+        <span class="kw">select</span> {
+        <span class="kw">case</span> <span class="id">msg1</span> <span class="op">:=</span> <span class="ch">&lt;-<span class="id">ch1</span></span>:
+            <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"ch1 থেকে:"</span>, <span class="id">msg1</span>)
+        <span class="kw">case</span> <span class="id">msg2</span> <span class="op">:=</span> <span class="ch">&lt;-<span class="id">ch2</span></span>:
+            <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"ch2 থেকে:"</span>, <span class="id">msg2</span>)
+        }
+    }
+
+    <span class="cm">// ─── Default case: non-blocking ───</span>
+    <span class="id">ch3</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">int</span>)
+    <span class="kw">select</span> {
+    <span class="kw">case</span> <span class="id">v</span> <span class="op">:=</span> <span class="ch">&lt;-<span class="id">ch3</span></span>:
+        <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"পেলাম:"</span>, <span class="id">v</span>)
+    <span class="kw">default</span>:
+        <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"channel প্রস্তুত নেই, এগিয়ে যাচ্ছি"</span>)
+    }
+}
+
+<span class="cm">/* আউটপুট:
+ch2 থেকে: দুই    (১ সেকেন্ড পরে)
+ch1 থেকে: একটি  (২ সেকেন্ড পরে)
+channel প্রস্তুত নেই, এগিয়ে যাচ্ছি
+*/</span></pre>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Select-এর গুরুত্বপূর্ণ বৈশিষ্ট্য</h3>
+        <ul>
+          <li>একাধিক case প্রস্তুত থাকলে <strong>র্যান্ডমলি</strong> একটি বেছে নেয়</li>
+          <li><code>default</code> case থাকলে কোনো channel প্রস্তুত না থাকলেও block হয় না</li>
+          <li><code>select {}</code> (খালি) চিরকাল block করে — ইচ্ছাকৃত block করতে ব্যবহার হয়</li>
+          <li>nil channel-এর case কখনো নির্বাচিত হয় না</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 10. TIMEOUT -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="timeout">
+      <div class="section-header">
+        <span class="section-num">10</span>
+        <h2 class="section-title">Timeout প্যাটার্ন</h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <p>
+        <code>time.After()</code> ব্যবহার করে select-এর সাথে Timeout বাস্তবায়ন করা যায়।
+        এটি দীর্ঘ অপেক্ষা এড়াতে ব্যবহৃত হয়।
+      </p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">go</span>
+          <span class="code-label">timeout-pattern.go</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        </div>
+        <pre><span class="kw">package</span> <span class="id">main</span>
+
+<span class="kw">import</span> (
+    <span class="st">"fmt"</span>
+    <span class="st">"time"</span>
+)
+
+<span class="kw">func</span> <span class="fn">slowOperation</span>() <span class="kw">&lt;-chan</span> <span class="ty">string</span> {
+    <span class="id">result</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">string</span>)
+    <span class="kw">go func</span>() {
+        <span class="id">time</span>.<span class="fn">Sleep</span>(<span class="nb">3</span> <span class="op">*</span> <span class="id">time</span>.<span class="id">Second</span>)  <span class="cm">// ধীর কাজ</span>
+        <span class="ch">result <span class="op">&lt;-</span></span> <span class="st">"কাজ শেষ!"</span>
+    }()
+    <span class="kw">return</span> <span class="id">result</span>
+}
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    <span class="id">result</span> <span class="op">:=</span> <span class="fn">slowOperation</span>()
+
+    <span class="kw">select</span> {
+    <span class="kw">case</span> <span class="id">r</span> <span class="op">:=</span> <span class="ch">&lt;-<span class="id">result</span></span>:
+        <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"সফল:"</span>, <span class="id">r</span>)
+
+    <span class="kw">case</span> <span class="op">&lt;-</span><span class="id">time</span>.<span class="fn">After</span>(<span class="nb">2</span> <span class="op">*</span> <span class="id">time</span>.<span class="id">Second</span>):
+        <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"সময় শেষ! অপারেশন timeout হয়েছে"</span>)
+    }
+
+    <span class="cm">// ─── Context দিয়ে আরো ভালো timeout ───</span>
+    <span class="cm">// ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)</span>
+    <span class="cm">// defer cancel()</span>
+    <span class="cm">// select { case r := &lt;-result: ... case &lt;-ctx.Done(): ... }</span>
+}
+
+<span class="cm">/* আউটপুট (২ সেকেন্ড পরে):
+সময় শেষ! অপারেশন timeout হয়েছে
+*/</span></pre>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 11. PIPELINE -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="pipeline">
+      <div class="section-header">
+        <span class="section-num">11</span>
+        <h2 class="section-title">Pipeline প্যাটার্ন <span class="badge badge-adv">উন্নত</span></h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <p>
+        Pipeline-এ একটি Stage-এর আউটপুট Channel পরের Stage-এর ইনপুট। এটি অনেকটা
+        Unix pipe (<code>ls | grep | sort</code>) এর মতো।
+      </p>
+
+      <div class="flow">
+        <div class="flow-box goroutine">generate<br><small>1,2,3...</small></div>
+        <div class="flow-arrow">→ ch1 →</div>
+        <div class="flow-box channel">square<br><small>×২</small></div>
+        <div class="flow-arrow">→ ch2 →</div>
+        <div class="flow-box channel">filter<br><small>&gt;10</small></div>
+        <div class="flow-arrow">→ ch3 →</div>
+        <div class="flow-box result">print</div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">go</span>
+          <span class="code-label">pipeline-pattern.go</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        </div>
+        <pre><span class="kw">package</span> <span class="id">main</span>
+
+<span class="kw">import</span> <span class="st">"fmt"</span>
+
+<span class="cm">// Stage 1: সংখ্যা তৈরি করো</span>
+<span class="kw">func</span> <span class="fn">generate</span>(<span class="id">nums</span> ...<span class="ty">int</span>) <span class="kw">&lt;-chan</span> <span class="ty">int</span> {
+    <span class="id">out</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">int</span>)
+    <span class="kw">go func</span>() {
+        <span class="kw">defer</span> <span class="nb">close</span>(<span class="id">out</span>)
+        <span class="kw">for</span> <span class="kw">_</span>, <span class="id">n</span> <span class="op">:=</span> <span class="kw">range</span> <span class="id">nums</span> {
+            <span class="ch">out <span class="op">&lt;-</span></span> <span class="id">n</span>
+        }
+    }()
+    <span class="kw">return</span> <span class="id">out</span>
+}
+
+<span class="cm">// Stage 2: বর্গ করো</span>
+<span class="kw">func</span> <span class="fn">square</span>(<span class="id">in</span> <span class="kw">&lt;-chan</span> <span class="ty">int</span>) <span class="kw">&lt;-chan</span> <span class="ty">int</span> {
+    <span class="id">out</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">int</span>)
+    <span class="kw">go func</span>() {
+        <span class="kw">defer</span> <span class="nb">close</span>(<span class="id">out</span>)
+        <span class="kw">for</span> <span class="id">n</span> <span class="op">:=</span> <span class="kw">range</span> <span class="id">in</span> {
+            <span class="ch">out <span class="op">&lt;-</span></span> <span class="id">n</span> <span class="op">*</span> <span class="id">n</span>
+        }
+    }()
+    <span class="kw">return</span> <span class="id">out</span>
+}
+
+<span class="cm">// Stage 3: ফিল্টার করো (শুধু বড় মান)</span>
+<span class="kw">func</span> <span class="fn">filter</span>(<span class="id">in</span> <span class="kw">&lt;-chan</span> <span class="ty">int</span>, <span class="id">threshold</span> <span class="ty">int</span>) <span class="kw">&lt;-chan</span> <span class="ty">int</span> {
+    <span class="id">out</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">int</span>)
+    <span class="kw">go func</span>() {
+        <span class="kw">defer</span> <span class="nb">close</span>(<span class="id">out</span>)
+        <span class="kw">for</span> <span class="id">n</span> <span class="op">:=</span> <span class="kw">range</span> <span class="id">in</span> {
+            <span class="kw">if</span> <span class="id">n</span> <span class="op">&gt;</span> <span class="id">threshold</span> {
+                <span class="ch">out <span class="op">&lt;-</span></span> <span class="id">n</span>
+            }
+        }
+    }()
+    <span class="kw">return</span> <span class="id">out</span>
+}
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    <span class="cm">// Pipeline গড়ো: generate → square → filter → print</span>
+    <span class="id">nums</span>     <span class="op">:=</span> <span class="fn">generate</span>(<span class="nb">1</span>, <span class="nb">2</span>, <span class="nb">3</span>, <span class="nb">4</span>, <span class="nb">5</span>, <span class="nb">6</span>)
+    <span class="id">squared</span>  <span class="op">:=</span> <span class="fn">square</span>(<span class="id">nums</span>)
+    <span class="id">filtered</span> <span class="op">:=</span> <span class="fn">filter</span>(<span class="id">squared</span>, <span class="nb">10</span>)
+
+    <span class="kw">for</span> <span class="id">result</span> <span class="op">:=</span> <span class="kw">range</span> <span class="id">filtered</span> {
+        <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="id">result</span>)
+    }
+}
+
+<span class="cm">/* আউটপুট (10-এর বেশি বর্গসংখ্যা):
+16   (4²)
+25   (5²)
+36   (6²)
+*/</span></pre>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 12. FAN-OUT / FAN-IN -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="fanout">
+      <div class="section-header">
+        <span class="section-num">12</span>
+        <h2 class="section-title">Fan-Out / Fan-In প্যাটার্ন <span class="badge badge-adv">উন্নত</span></h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <p>
+        <strong>Fan-Out:</strong> একটি Channel থেকে একাধিক Worker-এ কাজ বিতরণ করা।<br>
+        <strong>Fan-In:</strong> একাধিক Channel-এর ডেটা একটিতে জড়ো করা।
+      </p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">go</span>
+          <span class="code-label">fanout-fanin.go</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        </div>
+        <pre><span class="kw">package</span> <span class="id">main</span>
+
+<span class="kw">import</span> (
+    <span class="st">"fmt"</span>
+    <span class="st">"sync"</span>
+    <span class="st">"time"</span>
+    <span class="st">"math/rand"</span>
+)
+
+<span class="cm">// একটি worker — ইনপুট নিয়ে প্রসেস করে আউটপুট দেয়</span>
+<span class="kw">func</span> <span class="fn">worker</span>(<span class="id">id</span> <span class="ty">int</span>, <span class="id">in</span> <span class="kw">&lt;-chan</span> <span class="ty">int</span>) <span class="kw">&lt;-chan</span> <span class="ty">int</span> {
+    <span class="id">out</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">int</span>)
+    <span class="kw">go func</span>() {
+        <span class="kw">defer</span> <span class="nb">close</span>(<span class="id">out</span>)
+        <span class="kw">for</span> <span class="id">n</span> <span class="op">:=</span> <span class="kw">range</span> <span class="id">in</span> {
+            <span class="cm">// কাজের সময় অনুকরণ</span>
+            <span class="id">time</span>.<span class="fn">Sleep</span>(<span class="id">time</span>.<span class="fn">Duration</span>(<span class="id">rand</span>.<span class="fn">Intn</span>(<span class="nb">100</span>)) <span class="op">*</span> <span class="id">time</span>.<span class="id">Millisecond</span>)
+            <span class="id">result</span> <span class="op">:=</span> <span class="id">n</span> <span class="op">*</span> <span class="id">n</span>
+            <span class="id">fmt</span>.<span class="fn">Printf</span>(<span class="st">"Worker %d: %d² = %d\n"</span>, <span class="id">id</span>, <span class="id">n</span>, <span class="id">result</span>)
+            <span class="ch">out <span class="op">&lt;-</span></span> <span class="id">result</span>
+        }
+    }()
+    <span class="kw">return</span> <span class="id">out</span>
+}
+
+<span class="cm">// Fan-In: একাধিক channel মিলিয়ে একটি বানাও</span>
+<span class="kw">func</span> <span class="fn">merge</span>(<span class="id">channels</span> ...<span class="kw">&lt;-chan</span> <span class="ty">int</span>) <span class="kw">&lt;-chan</span> <span class="ty">int</span> {
+    <span class="id">merged</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">int</span>)
+    <span class="kw">var</span> <span class="id">wg</span> <span class="id">sync</span>.<span class="ty">WaitGroup</span>
+
+    <span class="id">output</span> <span class="op">:=</span> <span class="kw">func</span>(<span class="id">c</span> <span class="kw">&lt;-chan</span> <span class="ty">int</span>) {
+        <span class="kw">defer</span> <span class="id">wg</span>.<span class="fn">Done</span>()
+        <span class="kw">for</span> <span class="id">v</span> <span class="op">:=</span> <span class="kw">range</span> <span class="id">c</span> {
+            <span class="ch">merged <span class="op">&lt;-</span></span> <span class="id">v</span>
+        }
+    }
+
+    <span class="id">wg</span>.<span class="fn">Add</span>(<span class="nb">len</span>(<span class="id">channels</span>))
+    <span class="kw">for</span> <span class="kw">_</span>, <span class="id">c</span> <span class="op">:=</span> <span class="kw">range</span> <span class="id">channels</span> {
+        <span class="kw">go</span> <span class="fn">output</span>(<span class="id">c</span>)
+    }
+
+    <span class="cm">// সব শেষ হলে merged বন্ধ করো</span>
+    <span class="kw">go func</span>() {
+        <span class="id">wg</span>.<span class="fn">Wait</span>()
+        <span class="nb">close</span>(<span class="id">merged</span>)
+    }()
+
+    <span class="kw">return</span> <span class="id">merged</span>
+}
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    <span class="id">input</span> <span class="op">:=</span> <span class="fn">generate</span>(<span class="nb">1</span>, <span class="nb">2</span>, <span class="nb">3</span>, <span class="nb">4</span>, <span class="nb">5</span>, <span class="nb">6</span>)
+
+    <span class="cm">// Fan-Out: একই input channel থেকে ৩টি worker-এ বিতরণ</span>
+    <span class="cm">// (এখানে সবাই একই ch পড়ে — Go নিজেই বিতরণ করে)</span>
+    <span class="id">w1</span> <span class="op">:=</span> <span class="fn">worker</span>(<span class="nb">1</span>, <span class="id">input</span>)
+    <span class="id">w2</span> <span class="op">:=</span> <span class="fn">worker</span>(<span class="nb">2</span>, <span class="id">input</span>)
+    <span class="id">w3</span> <span class="op">:=</span> <span class="fn">worker</span>(<span class="nb">3</span>, <span class="id">input</span>)
+
+    <span class="cm">// Fan-In: তিনটি output একসাথে</span>
+    <span class="kw">for</span> <span class="id">result</span> <span class="op">:=</span> <span class="kw">range</span> <span class="fn">merge</span>(<span class="id">w1</span>, <span class="id">w2</span>, <span class="id">w3</span>) {
+        <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"→ ফলাফল:"</span>, <span class="id">result</span>)
+    }
+}
+
+<span class="kw">func</span> <span class="fn">generate</span>(<span class="id">nums</span> ...<span class="ty">int</span>) <span class="kw">&lt;-chan</span> <span class="ty">int</span> {
+    <span class="id">out</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">int</span>)
+    <span class="kw">go func</span>() {
+        <span class="kw">defer</span> <span class="nb">close</span>(<span class="id">out</span>)
+        <span class="kw">for</span> <span class="kw">_</span>, <span class="id">n</span> <span class="op">:=</span> <span class="kw">range</span> <span class="id">nums</span> { <span class="ch">out <span class="op">&lt;-</span></span> <span class="id">n</span> }
+    }()
+    <span class="kw">return</span> <span class="id">out</span>
+}</pre>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 13. WORKER POOL -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="worker">
+      <div class="section-header">
+        <span class="section-num">13</span>
+        <h2 class="section-title">Worker Pool প্যাটার্ন <span class="badge badge-adv">উন্নত</span></h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <p>
+        নির্দিষ্ট সংখ্যক Worker Goroutine তৈরি করে একটি job queue থেকে কাজ নেয়।
+        এটি সবচেয়ে বেশি ব্যবহৃত concurrency প্যাটার্নগুলোর একটি।
+      </p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">go</span>
+          <span class="code-label">worker-pool.go</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        </div>
+        <pre><span class="kw">package</span> <span class="id">main</span>
+
+<span class="kw">import</span> (
+    <span class="st">"fmt"</span>
+    <span class="st">"sync"</span>
+    <span class="st">"time"</span>
+)
+
+<span class="kw">type</span> <span class="ty">Job</span> <span class="kw">struct</span> {
+    <span class="id">ID</span>    <span class="ty">int</span>
+    <span class="id">Value</span> <span class="ty">int</span>
+}
+
+<span class="kw">type</span> <span class="ty">Result</span> <span class="kw">struct</span> {
+    <span class="id">Job</span>    <span class="ty">Job</span>
+    <span class="id">Output</span> <span class="ty">int</span>
+}
+
+<span class="cm">// worker: jobs থেকে কাজ নেয়, results-এ পাঠায়</span>
+<span class="kw">func</span> <span class="fn">workerFn</span>(<span class="id">id</span> <span class="ty">int</span>, <span class="id">jobs</span> <span class="kw">&lt;-chan</span> <span class="ty">Job</span>, <span class="id">results</span> <span class="kw">chan&lt;-</span> <span class="ty">Result</span>, <span class="id">wg</span> <span class="op">*</span><span class="id">sync</span>.<span class="ty">WaitGroup</span>) {
+    <span class="kw">defer</span> <span class="id">wg</span>.<span class="fn">Done</span>()
+    <span class="kw">for</span> <span class="id">job</span> <span class="op">:=</span> <span class="kw">range</span> <span class="id">jobs</span> {
+        <span class="id">fmt</span>.<span class="fn">Printf</span>(<span class="st">"[Worker %d] কাজ #%d শুরু\n"</span>, <span class="id">id</span>, <span class="id">job</span>.<span class="id">ID</span>)
+        <span class="id">time</span>.<span class="fn">Sleep</span>(<span class="nb">500</span> <span class="op">*</span> <span class="id">time</span>.<span class="id">Millisecond</span>)  <span class="cm">// কাজের অনুকরণ</span>
+        <span class="id">output</span> <span class="op">:=</span> <span class="id">job</span>.<span class="id">Value</span> <span class="op">*</span> <span class="id">job</span>.<span class="id">Value</span>
+        <span class="ch">results <span class="op">&lt;-</span></span> <span class="ty">Result</span>{<span class="id">Job</span>: <span class="id">job</span>, <span class="id">Output</span>: <span class="id">output</span>}
+        <span class="id">fmt</span>.<span class="fn">Printf</span>(<span class="st">"[Worker %d] কাজ #%d শেষ → %d\n"</span>, <span class="id">id</span>, <span class="id">job</span>.<span class="id">ID</span>, <span class="id">output</span>)
+    }
+}
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    <span class="kw">const</span> (
+        <span class="id">numJobs</span>    <span class="op">=</span> <span class="nb">10</span>
+        <span class="id">numWorkers</span> <span class="op">=</span> <span class="nb">3</span>  <span class="cm">// একসাথে সর্বোচ্চ ৩ জন কাজ করবে</span>
+    )
+
+    <span class="id">jobs</span>    <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">Job</span>, <span class="id">numJobs</span>)
+    <span class="id">results</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">Result</span>, <span class="id">numJobs</span>)
+    <span class="kw">var</span> <span class="id">wg</span> <span class="id">sync</span>.<span class="ty">WaitGroup</span>
+
+    <span class="cm">// ৩টি worker goroutine শুরু করো</span>
+    <span class="kw">for</span> <span class="id">w</span> <span class="op">:=</span> <span class="nb">1</span>; <span class="id">w</span> <span class="op">&lt;=</span> <span class="id">numWorkers</span>; <span class="id">w</span><span class="op">++</span> {
+        <span class="id">wg</span>.<span class="fn">Add</span>(<span class="nb">1</span>)
+        <span class="kw">go</span> <span class="fn">workerFn</span>(<span class="id">w</span>, <span class="id">jobs</span>, <span class="id">results</span>, <span class="op">&amp;</span><span class="id">wg</span>)
+    }
+
+    <span class="cm">// সব job পাঠাও</span>
+    <span class="kw">for</span> <span class="id">j</span> <span class="op">:=</span> <span class="nb">1</span>; <span class="id">j</span> <span class="op">&lt;=</span> <span class="id">numJobs</span>; <span class="id">j</span><span class="op">++</span> {
+        <span class="ch">jobs <span class="op">&lt;-</span></span> <span class="ty">Job</span>{<span class="id">ID</span>: <span class="id">j</span>, <span class="id">Value</span>: <span class="id">j</span>}
+    }
+    <span class="nb">close</span>(<span class="id">jobs</span>)  <span class="cm">// সব কাজ পাঠানো হয়েছে</span>
+
+    <span class="cm">// সব worker শেষ হলে results বন্ধ করো</span>
+    <span class="kw">go func</span>() {
+        <span class="id">wg</span>.<span class="fn">Wait</span>()
+        <span class="nb">close</span>(<span class="id">results</span>)
+    }()
+
+    <span class="cm">// ফলাফল সংগ্রহ করো</span>
+    <span class="kw">var</span> <span class="id">total</span> <span class="ty">int</span>
+    <span class="kw">for</span> <span class="id">r</span> <span class="op">:=</span> <span class="kw">range</span> <span class="id">results</span> {
+        <span class="id">total</span> <span class="op">+=</span> <span class="id">r</span>.<span class="id">Output</span>
+    }
+    <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"মোট ফলাফল:"</span>, <span class="id">total</span>)
+}</pre>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 14. DONE CHANNEL -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="done">
+      <div class="section-header">
+        <span class="section-num">14</span>
+        <h2 class="section-title">Done Channel প্যাটার্ন (Cancellation)</h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <p>
+        <code>done</code> channel দিয়ে Goroutine-কে বন্ধ করার সংকেত দেওয়া হয়।
+        এটি Go-তে Cancellation-এর মৌলিক পদ্ধতি।
+      </p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">go</span>
+          <span class="code-label">done-channel.go</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        </div>
+        <pre><span class="kw">package</span> <span class="id">main</span>
+
+<span class="kw">import</span> (
+    <span class="st">"fmt"</span>
+    <span class="st">"time"</span>
+)
+
+<span class="cm">// Goroutine যতক্ষণ কাজ করবে, done না পেলে</span>
+<span class="kw">func</span> <span class="fn">worker</span>(<span class="id">done</span> <span class="kw">&lt;-chan</span> <span class="kw">struct</span>{}) {
+    <span class="kw">for</span> {
+        <span class="kw">select</span> {
+        <span class="kw">case</span> <span class="op">&lt;-</span><span class="id">done</span>:
+            <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"[Worker] বন্ধ সংকেত পেয়েছি, বিদায়!"</span>)
+            <span class="kw">return</span>
+        <span class="kw">default</span>:
+            <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"[Worker] কাজ করছি..."</span>)
+            <span class="id">time</span>.<span class="fn">Sleep</span>(<span class="nb">500</span> <span class="op">*</span> <span class="id">time</span>.<span class="id">Millisecond</span>)
+        }
+    }
+}
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    <span class="id">done</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="kw">struct</span>{})
+
+    <span class="kw">go</span> <span class="fn">worker</span>(<span class="id">done</span>)
+
+    <span class="id">time</span>.<span class="fn">Sleep</span>(<span class="nb">2</span> <span class="op">*</span> <span class="id">time</span>.<span class="id">Second</span>)
+    <span class="nb">close</span>(<span class="id">done</span>)  <span class="cm">// সব listener-কে একসাথে সংকেত দাও</span>
+
+    <span class="id">time</span>.<span class="fn">Sleep</span>(<span class="nb">100</span> <span class="op">*</span> <span class="id">time</span>.<span class="id">Millisecond</span>)
+    <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"[Main] সম্পন্ন"</span>)
+}
+
+<span class="cm">// ─── Context দিয়ে আরো শক্তিশালী cancellation ───
+// ctx, cancel := context.WithCancel(context.Background())
+// defer cancel()
+// go worker(ctx)  // ctx.Done() channel ব্যবহার করে</span></pre>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">💡 close() দিয়ে broadcast</div>
+        <p>Channel-এ <code>close()</code> করলে সেই channel-এ অপেক্ষারত <strong>সব</strong> Goroutine-কে একসাথে জানানো যায়। এটি <code>done &lt;- struct{}{}</code> পাঠানোর চেয়ে ভালো, কারণ শুধু একটি Goroutine সংকেত পেত।</p>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 15. NIL CHANNEL -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="nil">
+      <div class="section-header">
+        <span class="section-num">15</span>
+        <h2 class="section-title">Nil Channel-এর কৌশল</h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <p>
+        Nil channel-এ send বা receive সবসময় block করে — অনির্দিষ্টকাল।
+        এটি Select-এ একটি case নিষ্ক্রিয় করার কৌশলে ব্যবহৃত হয়।
+      </p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">go</span>
+          <span class="code-label">nil-channel-trick.go</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        </div>
+        <pre><span class="kw">package</span> <span class="id">main</span>
+
+<span class="kw">import</span> <span class="st">"fmt"</span>
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    <span class="id">ch1</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">int</span>, <span class="nb">3</span>)
+    <span class="id">ch2</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">int</span>, <span class="nb">3</span>)
+
+    <span class="ch">ch1 <span class="op">&lt;-</span></span> <span class="nb">1</span>; <span class="ch">ch1 <span class="op">&lt;-</span></span> <span class="nb">2</span>; <span class="ch">ch1 <span class="op">&lt;-</span></span> <span class="nb">3</span>; <span class="nb">close</span>(<span class="id">ch1</span>)
+    <span class="ch">ch2 <span class="op">&lt;-</span></span> <span class="nb">10</span>; <span class="ch">ch2 <span class="op">&lt;-</span></span> <span class="nb">20</span>; <span class="nb">close</span>(<span class="id">ch2</span>)
+
+    <span class="cm">// উভয় channel থেকে পড়তে থাকো, যেটি শেষ হয়ে যায়, সেটি nil করো</span>
+    <span class="kw">for</span> <span class="id">ch1</span> <span class="op">!=</span> <span class="kw">nil</span> <span class="op">||</span> <span class="id">ch2</span> <span class="op">!=</span> <span class="kw">nil</span> {
+        <span class="kw">select</span> {
+        <span class="kw">case</span> <span class="id">v</span>, <span class="id">ok</span> <span class="op">:=</span> <span class="ch">&lt;-<span class="id">ch1</span></span>:
+            <span class="kw">if</span> <span class="op">!</span><span class="id">ok</span> {
+                <span class="id">ch1</span> <span class="op">=</span> <span class="kw">nil</span>  <span class="cm">// এই case কে নিষ্ক্রিয় করো</span>
+                <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"ch1 শেষ"</span>)
+            } <span class="kw">else</span> {
+                <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"ch1:"</span>, <span class="id">v</span>)
+            }
+        <span class="kw">case</span> <span class="id">v</span>, <span class="id">ok</span> <span class="op">:=</span> <span class="ch">&lt;-<span class="id">ch2</span></span>:
+            <span class="kw">if</span> <span class="op">!</span><span class="id">ok</span> {
+                <span class="id">ch2</span> <span class="op">=</span> <span class="kw">nil</span>  <span class="cm">// এই case কে নিষ্ক্রিয় করো</span>
+                <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"ch2 শেষ"</span>)
+            } <span class="kw">else</span> {
+                <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"ch2:"</span>, <span class="id">v</span>)
+            }
+        }
+    }
+    <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"সবকিছু শেষ!"</span>)
+}</pre>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 16. ERRORS -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="errors">
+      <div class="section-header">
+        <span class="section-num">16</span>
+        <h2 class="section-title">সাধারণ ভুল ও সমাধান <span class="badge badge-danger">Deadlock</span></h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">ভুল ১: Main Goroutine-এ Deadlock</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">go</span>
+            <span class="code-label">❌ ভুল উদাহরণ</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="kw">func</span> <span class="fn">main</span>() {
+    <span class="id">ch</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">int</span>)
+    <span class="cm">// ❌ main goroutine-এই পাঠাচ্ছি এবং পড়ছি — Deadlock!</span>
+    <span class="ch">ch <span class="op">&lt;-</span></span> <span class="nb">42</span>        <span class="cm">// এখানেই আটকে যাবে</span>
+    <span class="id">v</span> <span class="op">:=</span> <span class="ch">&lt;-<span class="id">ch</span></span>      <span class="cm">// এখানে কখনো পৌঁছাবে না</span>
+    <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="id">v</span>)
+}
+
+<span class="cm">// ✅ সমাধান: goroutine-এ পাঠাও</span>
+<span class="kw">func</span> <span class="fn">mainFixed</span>() {
+    <span class="id">ch</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">int</span>)
+    <span class="kw">go func</span>() { <span class="ch">ch <span class="op">&lt;-</span></span> <span class="nb">42</span> }()
+    <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="ch">&lt;-<span class="id">ch</span></span>)
+}</pre>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">ভুল ২: Goroutine Leak</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">go</span>
+            <span class="code-label">❌ Goroutine Leak</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="kw">func</span> <span class="fn">leak</span>() <span class="kw">&lt;-chan</span> <span class="ty">int</span> {
+    <span class="id">ch</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">int</span>)
+    <span class="kw">go func</span>() {
+        <span class="cm">// ❌ যদি কেউ ch না পড়ে, এই goroutine চিরকাল থাকবে</span>
+        <span class="kw">for</span> <span class="id">v</span> <span class="op">:=</span> <span class="nb">0</span>; ; <span class="id">v</span><span class="op">++</span> {
+            <span class="ch">ch <span class="op">&lt;-</span></span> <span class="id">v</span>
+        }
+    }()
+    <span class="kw">return</span> <span class="id">ch</span>
+}
+
+<span class="cm">// ✅ সমাধান: done channel দিয়ে বন্ধ করার সুযোগ দাও</span>
+<span class="kw">func</span> <span class="fn">noLeak</span>(<span class="id">done</span> <span class="kw">&lt;-chan</span> <span class="kw">struct</span>{}) <span class="kw">&lt;-chan</span> <span class="ty">int</span> {
+    <span class="id">ch</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">int</span>)
+    <span class="kw">go func</span>() {
+        <span class="kw">defer</span> <span class="nb">close</span>(<span class="id">ch</span>)
+        <span class="kw">for</span> <span class="id">v</span> <span class="op">:=</span> <span class="nb">0</span>; ; <span class="id">v</span><span class="op">++</span> {
+            <span class="kw">select</span> {
+            <span class="kw">case</span> <span class="ch">ch <span class="op">&lt;-</span></span> <span class="id">v</span>:
+            <span class="kw">case</span> <span class="op">&lt;-</span><span class="id">done</span>:
+                <span class="kw">return</span>  <span class="cm">// পরিষ্কারভাবে বের হও</span>
+            }
+        }
+    }()
+    <span class="kw">return</span> <span class="id">ch</span>
+}</pre>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">ভুল ৩: বন্ধ Channel-এ পাঠানো</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">go</span>
+            <span class="code-label">❌ Panic উদাহরণ</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="kw">func</span> <span class="fn">main</span>() {
+    <span class="id">ch</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="ty">int</span>)
+    <span class="nb">close</span>(<span class="id">ch</span>)
+    <span class="cm">// ❌ panic: send on closed channel</span>
+    <span class="ch">ch <span class="op">&lt;-</span></span> <span class="nb">1</span>
+}
+
+<span class="cm">// ✅ নিয়ম: যে খুলেছে (প্রেরক), সেই বন্ধ করবে।
+// গ্রাহক কখনো close() ডাকবে না।
+// defer close(ch) ব্যবহার করো নিরাপদ প্যাটার্নের জন্য।</span></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 17. PATTERNS -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="patterns">
+      <div class="section-header">
+        <span class="section-num">17</span>
+        <h2 class="section-title">বাস্তব জীবনের প্যাটার্ন</h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Semaphore — একসাথে কতজন কাজ করতে পারবে সীমা দাও</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">go</span>
+            <span class="code-label">semaphore.go</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="kw">package</span> <span class="id">main</span>
+
+<span class="kw">import</span> (
+    <span class="st">"fmt"</span>
+    <span class="st">"sync"</span>
+    <span class="st">"time"</span>
+)
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    <span class="cm">// একসাথে সর্বোচ্চ ৩টি goroutine চলবে</span>
+    <span class="id">semaphore</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="kw">struct</span>{}, <span class="nb">3</span>)
+    <span class="kw">var</span> <span class="id">wg</span> <span class="id">sync</span>.<span class="ty">WaitGroup</span>
+
+    <span class="kw">for</span> <span class="id">i</span> <span class="op">:=</span> <span class="nb">1</span>; <span class="id">i</span> <span class="op">&lt;=</span> <span class="nb">10</span>; <span class="id">i</span><span class="op">++</span> {
+        <span class="id">wg</span>.<span class="fn">Add</span>(<span class="nb">1</span>)
+        <span class="kw">go func</span>(<span class="id">id</span> <span class="ty">int</span>) {
+            <span class="kw">defer</span> <span class="id">wg</span>.<span class="fn">Done</span>()
+
+            <span class="cm">// "টিকেট" নাও — slot খালি না হলে অপেক্ষা করো</span>
+            <span class="ch">semaphore <span class="op">&lt;-</span></span> <span class="kw">struct</span>{}{}
+            <span class="kw">defer</span> <span class="kw">func</span>() { <span class="ch">&lt;-<span class="id">semaphore</span></span> }()  <span class="cm">// "টিকেট" ফেরত দাও</span>
+
+            <span class="id">fmt</span>.<span class="fn">Printf</span>(<span class="st">"[%d] কাজ করছি\n"</span>, <span class="id">id</span>)
+            <span class="id">time</span>.<span class="fn">Sleep</span>(<span class="nb">500</span> <span class="op">*</span> <span class="id">time</span>.<span class="id">Millisecond</span>)
+            <span class="id">fmt</span>.<span class="fn">Printf</span>(<span class="st">"[%d] শেষ\n"</span>, <span class="id">id</span>)
+        }(<span class="id">i</span>)
+    }
+    <span class="id">wg</span>.<span class="fn">Wait</span>()
+}</pre>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">Future / Promise প্যাটার্ন — পরে ফলাফল নাও</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">go</span>
+            <span class="code-label">future-pattern.go</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="kw">package</span> <span class="id">main</span>
+
+<span class="kw">import</span> (
+    <span class="st">"fmt"</span>
+    <span class="st">"time"</span>
+)
+
+<span class="kw">type</span> <span class="ty">Future</span>[<span class="id">T</span> <span class="kw">any</span>] <span class="kw">struct</span> {
+    <span class="id">ch</span> <span class="kw">&lt;-chan</span> <span class="id">T</span>
+}
+
+<span class="kw">func</span> (<span class="id">f</span> <span class="ty">Future</span>[<span class="id">T</span>]) <span class="fn">Get</span>() <span class="id">T</span> {
+    <span class="kw">return</span> <span class="ch">&lt;-<span class="id">f</span>.<span class="id">ch</span></span>  <span class="cm">// ফলাফল না আসা পর্যন্ত অপেক্ষা করো</span>
+}
+
+<span class="kw">func</span> <span class="fn">Async</span>[<span class="id">T</span> <span class="kw">any</span>](<span class="id">fn</span> <span class="kw">func</span>() <span class="id">T</span>) <span class="ty">Future</span>[<span class="id">T</span>] {
+    <span class="id">ch</span> <span class="op">:=</span> <span class="nb">make</span>(<span class="kw">chan</span> <span class="id">T</span>, <span class="nb">1</span>)
+    <span class="kw">go func</span>() { <span class="ch">ch <span class="op">&lt;-</span></span> <span class="fn">fn</span>() }()
+    <span class="kw">return</span> <span class="ty">Future</span>[<span class="id">T</span>]{<span class="id">ch</span>: <span class="id">ch</span>}
+}
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    <span class="cm">// ব্যাকগ্রাউন্ডে কাজ শুরু করো</span>
+    <span class="id">result</span> <span class="op">:=</span> <span class="fn">Async</span>(<span class="kw">func</span>() <span class="ty">int</span> {
+        <span class="id">time</span>.<span class="fn">Sleep</span>(<span class="nb">2</span> <span class="op">*</span> <span class="id">time</span>.<span class="id">Second</span>)
+        <span class="kw">return</span> <span class="nb">42</span>
+    })
+
+    <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"অন্য কাজ করছি..."</span>)
+    <span class="id">time</span>.<span class="fn">Sleep</span>(<span class="nb">500</span> <span class="op">*</span> <span class="id">time</span>.<span class="id">Millisecond</span>)
+    <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"আরো কাজ..."</span>)
+
+    <span class="cm">// এখন ফলাফল দরকার — অপেক্ষা করো</span>
+    <span class="id">fmt</span>.<span class="fn">Println</span>(<span class="st">"ফলাফল:"</span>, <span class="id">result</span>.<span class="fn">Get</span>())
+}</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 18. CHEATSHEET -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="cheatsheet">
+      <div class="section-header">
+        <span class="section-num">18</span>
+        <h2 class="section-title">Channel Cheat Sheet</h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>অপারেশন</th><th>সিনট্যাক্স</th><th>বিস্তারিত</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>তৈরি (Unbuffered)</td><td><code>ch := make(chan T)</code></td><td>কোনো buffer নেই</td></tr>
+            <tr><td>তৈরি (Buffered)</td><td><code>ch := make(chan T, n)</code></td><td>n সাইজের buffer</td></tr>
+            <tr><td>পাঠানো</td><td><code>ch &lt;- value</code></td><td>block হতে পারে</td></tr>
+            <tr><td>গ্রহণ</td><td><code>v := &lt;-ch</code></td><td>block হতে পারে</td></tr>
+            <tr><td>গ্রহণ + ok check</td><td><code>v, ok := &lt;-ch</code></td><td>বন্ধ কিনা পরীক্ষা</td></tr>
+            <tr><td>বন্ধ করা</td><td><code>close(ch)</code></td><td>শুধু প্রেরক করবে</td></tr>
+            <tr><td>Range পড়া</td><td><code>for v := range ch</code></td><td>close পর্যন্ত চলে</td></tr>
+            <tr><td>আকার দেখা</td><td><code>len(ch), cap(ch)</code></td><td>বর্তমান / সর্বোচ্চ</td></tr>
+            <tr><td>Send-only</td><td><code>chan&lt;- T</code></td><td>ফাংশন প্যারামিটারে</td></tr>
+            <tr><td>Receive-only</td><td><code>&lt;-chan T</code></td><td>ফাংশন প্যারামিটারে</td></tr>
+            <tr><td>Non-blocking send</td><td><code>select { case ch&lt;-v: default: }</code></td><td>block না হয়ে চলে</td></tr>
+            <tr><td>Timeout</td><td><code>case &lt;-time.After(d):</code></td><td>Select-এ</td></tr>
+            <tr><td>Broadcast</td><td><code>close(done)</code></td><td>সবাইকে একসাথে জানায়</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🎯 মনে রাখার নিয়ম</div>
+        <p>
+          ১. Channel বন্ধ করার দায়িত্ব <strong>প্রেরকের</strong>, গ্রাহকের নয়।<br>
+          ২. Goroutine leak এড়াতে <code>done</code> channel বা <code>context</code> ব্যবহার করো।<br>
+          ৩. Select-এ <code>default</code> থাকলে non-blocking হয়।<br>
+          ৪. Nil channel select-এ কখনো নির্বাচিত হয় না — এটি কৌশলে ব্যবহার হয়।<br>
+          ৫. <code>defer close(ch)</code> দিয়ে নিশ্চিত করো channel বন্ধ হবেই।
+        </p>
+      </div>
+
+      <div style="margin-top:40px; padding:28px; background:var(--bg2); border:1px solid var(--border); border-radius:12px; text-align:center;">
+        <div style="font-size:32px; margin-bottom:12px;">🎉</div>
+        <h3 style="font-family:'Tiro Bangla',serif; font-size:22px; color:var(--accent); margin-bottom:10px;">অভিনন্দন!</h3>
+        <p style="color:var(--text2); max-width:500px; margin:0 auto;">
+          তুমি Go Channel-এর সম্পূর্ণ গাইড শেষ করেছো। এখন নিজে কোড লিখে অনুশীলন করো —
+          সেটাই সেরা শেখার পথ।
+        </p>
+        <div style="margin-top:16px; font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text2);">
+          go run your-idea.go
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+</main>
+
+<script>
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const el = document.documentElement;
+    const pct = (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  });
+
+  // Active nav
+  const sections = document.querySelectorAll('.section');
+  const navItems = document.querySelectorAll('.nav-item');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navItems.forEach(n => n.classList.remove('active'));
+        const active = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+  sections.forEach(s => observer.observe(s));
+
+  // Copy button
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    const text = pre.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ copied';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  // Mobile sidebar
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+  }
+
+  // Close sidebar on nav click (mobile)
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.getElementById('sidebar').classList.remove('open');
+    });
+  });
+</script>
+</body>
+</html>
